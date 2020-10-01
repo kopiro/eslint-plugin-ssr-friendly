@@ -6,16 +6,14 @@ const isDOMGlobal = (name) => {
   // Run this code in the console to get all window.XYZ keys
   // JSON.stringify($$('#sidebar-quicklinks li code').shift().map(e => e.innerText))
   // Then open a Node REPL, and filter those:
-  // JSON.stringify(YOUR_OBJECT_HERE.filter(e => typeof globalThis[e] === 'undefined'))
+  // JSON.stringify(x.filter(e => typeof globalThis[e] === 'undefined'))
   return [
     "window",
     "applicationCache",
     "caches",
     "closed",
-    "console",
     "controllers",
     "crossOriginIsolated",
-    "crypto",
     "customElements",
     "defaultStatus",
     "devicePixelRatio",
@@ -176,9 +174,6 @@ const isDOMGlobal = (name) => {
     "cancelAnimationFrame",
     "cancelIdleCallback",
     "captureEvents",
-    "clearImmediate",
-    "clearInterval",
-    "clearTimeout",
     "close",
     "confirm",
     "convertPointFromNodeToPage",
@@ -203,7 +198,6 @@ const isDOMGlobal = (name) => {
     "postMessage",
     "print",
     "prompt",
-    "queueMicrotask",
     "releaseEvents",
     "requestAnimationFrame",
     "requestFileSystem",
@@ -218,9 +212,6 @@ const isDOMGlobal = (name) => {
     "scrollByPages",
     "scrollTo",
     "setCursor",
-    "setImmediate",
-    "setInterval",
-    "setTimeout",
     "showModalDialog",
     "sizeToContent",
     "stop",
@@ -311,8 +302,6 @@ const isDOMGlobal = (name) => {
     "Range",
     "StaticRange",
     "Text",
-    "TextDecoder",
-    "TextEncoder",
     "TimeRanges",
     "TreeWalker",
     "TypeInfo",
@@ -340,8 +329,9 @@ const isForbiddenMethodInReactClassComponent = (scope) => {
 const globalRule = (context) => {
   return {
     Identifier(node) {
-      // If this is not a forbidden DOM global variable, just early return
-      if (!isDOMGlobal(node.name)) {
+      // Skip in case we see "ABC.XYZ" and this is the trigger for XYZ
+      // but of course don't skip for "window.window"
+      if (node.name !== "window" && node.parent.type === "MemberExpression") {
         return;
       }
 
@@ -354,16 +344,15 @@ const globalRule = (context) => {
         return;
       }
 
-      // Skip in case we see "ABC.XYZ" and this is the trigger for XYZ
-      // but of course don't skip for "window.window"
-      if (node.name !== "window" && node.parent.type === "MemberExpression") {
-        return;
-      }
-
       const scope = context.getScope();
       // If this variable has been declared in this scope,
       // then the developer is not referencing to the global window.XYZ var
       if (scope.set.get(node.name)) {
+        return;
+      }
+
+      // If this is not a forbidden DOM global variable, just early return
+      if (!isDOMGlobal(node.name)) {
         return;
       }
 
