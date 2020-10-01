@@ -312,8 +312,12 @@ const isDOMGlobal = (name) => {
 };
 
 const isReactFunctionComponent = (scope) => {
-  return scope.block.body.body.find(
-    (e) => e.type === "ReturnStatement" && e.argument.type === "JSXElement"
+  return (
+    scope.block.body &&
+    scope.block.body.body &&
+    scope.block.body.body.find(
+      (e) => e.type === "ReturnStatement" && e.argument.type === "JSXElement"
+    )
   );
 };
 
