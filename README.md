@@ -15,11 +15,10 @@ Then add these to your eslintrc configuration:
 
 ```json
 {
-    plugins: [..., "ssr-friendly"],
-    rules: {
-        ...,
-        "ssr-friendly/ssr-friendly": "error",
-    }
+  "plugins": ["ssr-friendly"],
+  "rules": {
+    "ssr-friendly/ssr-friendly": "error"
+  }
 }
 ```
 
