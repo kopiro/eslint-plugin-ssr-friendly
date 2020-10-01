@@ -1,6 +1,4 @@
-const headerMsg = (name) => `Use of DOM global <${name}> is forbidden`;
-
-const isDOMGlobal = (name) => {
+const isDOMGlobalName = (name) => {
   // How did I get this list?
   // Go to https://developer.mozilla.org/en-US/docs/Web/API/Window
   // Run this code in the console to get all window.XYZ keys
@@ -28,7 +26,6 @@ const isDOMGlobal = (name) => {
     "indexedDB",
     "innerHeight",
     "innerWidth",
-    "isSecureContext",
     "isSecureContext",
     "length",
     "localStorage",
@@ -311,6 +308,10 @@ const isDOMGlobal = (name) => {
   ].includes(name);
 };
 
+const isModuleScope = (scope) => {
+  return scope.type === "module";
+};
+
 const isReactFunctionComponent = (scope) => {
   return (
     scope.block.body &&
@@ -330,68 +331,71 @@ const isForbiddenMethodInReactClassComponent = (scope) => {
   );
 };
 
-const globalRule = (context) => {
+const createFn = (context) => {
+  const reportReference = (reference) => {
+    const node = reference.identifier;
+    const { name } = node;
+    if (
+      node.parent.type === "UnaryExpression" &&
+      node.parent.operator === "typeof"
+    ) {
+      return;
+    }
+
+    if (isModuleScope(reference.from)) {
+      context.report({
+        node: reference.identifier,
+        messageId: "defaultMessage",
+        data: {
+          name,
+          reason: "in module scope",
+        },
+      });
+      return;
+    }
+
+    if (isForbiddenMethodInReactClassComponent(reference.from)) {
+      context.report({
+        node,
+        messageId: "defaultMessage",
+        data: {
+          name,
+          reason: "in constructor / render method of a React.Component",
+        },
+      });
+      return;
+    }
+
+    // If we are in the first-level of a React FC
+    if (isReactFunctionComponent(reference.from)) {
+      context.report({
+        node,
+        messageId: "defaultMessage",
+        data: {
+          name,
+          reason: "in first render-cycle of a React.FC",
+        },
+      });
+    }
+  };
+
   return {
-    Identifier(node) {
-      // Skip in case we see "ABC.XYZ" and this is the trigger for XYZ
-      // but of course don't skip for "window.window"
-      if (
-        node.name !== "window" &&
-        ["MemberExpression", "Property"].includes(node.parent.type)
-      ) {
-        return;
-      }
-
-      // Make sure that `typeof window` is allowed anywhere
-      if (
-        node.parent &&
-        node.parent.type === "UnaryExpression" &&
-        node.parent.operator === "typeof"
-      ) {
-        return;
-      }
-
+    Program() {
       const scope = context.getScope();
-      // If this variable has been declared in this scope,
-      // then the developer is not referencing to the global window.XYZ var
-      if (scope.set.get(node.name)) {
-        return;
-      }
 
-      // If this is not a forbidden DOM global variable, just early return
-      if (!isDOMGlobal(node.name)) {
-        return;
-      }
+      // Report variables declared elsewhere (ex: variables defined as "global" by eslint)
+      scope.variables.forEach((variable) => {
+        if (!variable.defs.length && isDOMGlobalName(variable.name)) {
+          variable.references.forEach(reportReference);
+        }
+      });
 
-      // If the scope of identifier is the global scope, we have a problem for sure
-      if (scope.type === "module") {
-        context.report({
-          node,
-          message: `${headerMsg(node.name)} in global scope`,
-        });
-        return;
-      }
-
-      // If we are in a forbidden React Component method
-      if (isForbiddenMethodInReactClassComponent(scope)) {
-        context.report({
-          node,
-          message: `${headerMsg(
-            node.name
-          )} in constructor / render methods of a React CC`,
-        });
-        return;
-      }
-
-      // If we are in the first-level of a React FC
-      if (isReactFunctionComponent(scope)) {
-        context.report({
-          node,
-          message: `${headerMsg(
-            node.name
-          )} in first render-cycle of a React FC`,
-        });
-      }
+      // Report variables not declared at all
+      scope.through.forEach((reference) => {
+        if (isDOMGlobalName(reference.identifier.name)) {
+          reportReference(reference);
+        }
+      });
     },
   };
 };
@@ -399,7 +403,12 @@ const globalRule = (context) => {
 module.exports = {
   rules: {
     "ssr-friendly": {
-      create: globalRule,
+      meta: {
+        messages: {
+          defaultMessage: "Use of DOM global '{{name}} is forbidden {{reason}}",
+        },
+      },
+      create: createFn,
     },
   },
 };
