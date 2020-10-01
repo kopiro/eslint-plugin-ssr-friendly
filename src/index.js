@@ -335,7 +335,10 @@ const globalRule = (context) => {
     Identifier(node) {
       // Skip in case we see "ABC.XYZ" and this is the trigger for XYZ
       // but of course don't skip for "window.window"
-      if (node.name !== "window" && node.parent.type === "MemberExpression") {
+      if (
+        node.name !== "window" &&
+        ["MemberExpression", "Property"].includes(node.parent.type)
+      ) {
         return;
       }
 
