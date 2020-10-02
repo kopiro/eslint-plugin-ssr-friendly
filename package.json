@@ -6,6 +6,9 @@
   "files": [
     "src/index.js"
   ],
+  "scripts": {
+    "test": "node ./test"
+  },
   "devDependencies": {
     "eslint": "^7.10.0",
     "eslint-config-airbnb-base": "^14.2.0",
@@ -13,5 +16,8 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.4",
     "prettier": "^2.1.2"
+  },
+  "dependencies": {
+    "globals": "^13.2.0"
   }
 }

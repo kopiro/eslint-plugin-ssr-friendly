@@ -578,6 +578,13 @@ globals@^12.1.0:
   dependencies:
     type-fest "^0.8.1"
 
+globals@^13.2.0:
+  version "13.2.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-13.2.0.tgz#30b6814a1b7945d0b5b3795f81c275342bb17129"
+  integrity sha512-OjvFbGDlR7aIsLqFrraxoqIP3bb+wgp+Aarel5S56lwS3se4uUrwKkChnv1MqsMIv/Opexbmu7qCfHL9T0mBEg==
+  dependencies:
+    type-fest "^0.8.1"
+
 graceful-fs@^4.1.2:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"

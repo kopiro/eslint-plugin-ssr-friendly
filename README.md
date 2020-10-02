@@ -17,79 +17,122 @@ Then add these to your eslintrc configuration:
 {
   "plugins": ["ssr-friendly"],
   "rules": {
-    "ssr-friendly/ssr-friendly": "error"
+    "ssr-friendly/recommended": "error"
   }
 }
 ```
 
-### What should be detected
+## Rules
+
+### `no-dom-globals-in-module-scope`
+
+Disallow use of DOM globals in module and global scope,
+as this will break any `import/require` in a NodeJS environment.
+
+To fix it, wrap it in a function that will call when on client-side.
+
+_Please note that we can't detect if you're still calling this function without
+properly checking upfront if `typeof window !== "undefined"`._
+
+### Not allowed
 
 ```js
-/* eslint-disable no-restricted-globals */
-/* eslint-disable max-classes-per-file */
-/* eslint-disable no-unused-vars */
-import React from "react";
+const retina = devicePixelRatio > 2;
+```
 
-const isWindow = typeof window; // OK! you can check using typeof
+### Allowed
 
-const px = devicePixelRatio; // ERROR!
-const windowInnerWidth = window.innerWidth; // ERROR!
-const retina = devicePixelRatio > 2; // ERROR!
-const secureAndRetina = isSecureContext && retina; // ERROR!
-const dimensions = [screenX, screenY]; // ERROR!
+```js
+const isRetina = () => devicePixelRatio >= 2;
+```
 
-const object = {
-  devicePixelRatio: 1, // OK
-  w: window, // ERROR!
-  px: devicePixelRatio, // ERROR!
-};
+### `no-dom-globals-in-constructor`
 
-class X {
-  // eslint-disable-next-line class-methods-use-this
-  devicePixelRatio() {
-    return window.innerHeight; // OK! it's in a custom class
-  }
+Disallow use of DOM globals in class constructors,
+as this will break SSR if you're instantiating this class as singleton or you're rendering this component.
 
-  get message() {
-    return this.b;
+To fix it, move this statement in a `initOnBrowser()` like-method or `componentDidMount()` if you're using React.
+
+_Please note that we can't detect if you're still calling this function in your constructor without
+properly checking upfront if `typeof window !== "undefined"`._
+
+### Not allowed
+
+```js
+class myClass {
+  constructor() {
+    document.title = "Otto";
   }
 }
+```
 
-// eslint-disable-next-line no-undef
-const x = new ChildNode(); // ERROR!
-const fragment = new DocumentFragment(); // ERROR!
+### Allowed
 
-localStorage.setItem("test", "1"); // ERROR!
-function normalFunction() {
-  localStorage.setItem("test", "1"); // OK! it's wrapped in a function
-}
-
-const menubar = 1; // OK; even if shouldn't be done
-const access = menubar.Component; // OK
-
-function ReactFunctionComponent() {
-  const myWidth = window.innerWidth; // ERROR! it's in the render-cycle of a React FC
-  // eslint-disable-next-line no-undef
-  useEffect(() => {
-    document.title = "Title"; // OK! it's in the useEffect
-  }, []);
-  console.log(myWidth); // OK! console is a valid property in NodeJS
-  return <div x={myWidth} />;
-}
-
-class ClassicComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    const devicePixelRatio = 1; // OK! this is not referring to the global devicePixelRatio
-    this.matchMedia = window.matchMedia; // ERROR! use in constructor
-  }
-
+```js
+class myClass {
   componentDidMount() {
-    this.postMessage = window.postMessage; // OK! use in componentDidMount
-  }
-
-  render() {
-    return <div px={devicePixelRatio} />; // ERROR! use in render
+    document.title = "Otto";
   }
 }
+```
+
+### `no-dom-globals-in-react-cc-render`
+
+Disallow use of DOM globals in render() method of a React class-component,
+as this will break SSR if you're rendering this component.
+
+To fix it, move this statement to `componentDidMount()`
+
+_Please note that we can't detect if you're still calling this function in your constructor without
+properly checking upfront if `typeof window !== "undefined"`._
+
+### Not allowed
+
+```js
+class Header extends React.Component {
+  render() {
+    const width = window.innerWidth;
+    return <div style={{ width }} />;
+  }
+}
+```
+
+### Allowed
+
+```js
+class Header extends React.Component {
+  componentDidMount() {
+    this.setState({ width: window.innerWidth });
+  }
+  render() {
+    return <div style={{ width }} />;
+  }
+}
+```
+
+### `no-dom-globals-in-react-fc`
+
+Disallow use of DOM globals in the render-cycle of a React FC,
+as this will break SSR if you're rendering this component.
+
+To fix it, move this statement into a `useEffect())`
+
+### Not allowed
+
+```js
+const Header = () => {
+  window.addEventListener("resize", () => {});
+  return <div />;
+};
+```
+
+### Allowed
+
+```js
+const Header = () => {
+  useEffect(() => {
+    window.addEventListener("resize", () => {});
+  }, []);
+  return <div />;
+};
 ```
