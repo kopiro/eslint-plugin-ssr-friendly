@@ -1,5 +1,7 @@
 # eslint-plugin-ssr-friendly
 
+[![npm version](https://badge.fury.io/js/eslint-plugin-ssr-friendly.svg)](https://badge.fury.io/js/eslint-plugin-ssr-friendly)
+
 ESLint plugin that detects incorrect use of DOM globals properties in your code in
 order to properly do Server-Side-Rendering.
 
@@ -14,9 +16,7 @@ Then add these to your eslintrc configuration:
 ```json
 {
   "plugins": ["ssr-friendly"],
-  "rules": {
-    "ssr-friendly/recommended": "error"
-  }
+  "extends": ["plugin:ssr-friendly/recommended"]
 }
 ```
 

@@ -6,6 +6,15 @@
   "files": [
     "src/index.js"
   ],
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "ssr",
+    "server-side-rendering",
+    "globals",
+    "react",
+    "nodejs"
+  ],
   "scripts": {
     "test": "node ./test"
   },
@@ -16,6 +25,9 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.1.4",
     "prettier": "^2.1.2"
+  },
+  "peerDependencies": {
+    "eslint": ">=0.8.0"
   },
   "dependencies": {
     "globals": "^13.2.0"

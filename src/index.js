@@ -1,22 +1,26 @@
-const { browser } = require("globals");
+const { browser, node } = require("globals");
+const pkg = require("../package.json");
+
+const pluginName = pkg.name.replace("eslint-plugin-", "");
 
 const isDOMGlobalName = (name) => {
-  return name in browser;
+  return name in browser && !(name in node);
 };
 
 const isReturnValueJSX = (scope) => {
-  return (
-    scope.type === "function" &&
-    scope.block.body &&
-    scope.block.body.body &&
-    scope.block.body.body.find(
-      (e) =>
-        e &&
-        e.type === "ReturnStatement" &&
-        e.argument &&
-        e.argument.type === "JSXElement"
-    )
-  );
+  if (scope.block && scope.block.body && scope.block.body.body) {
+    return (
+      scope.type === "function" &&
+      scope.block.body.body.find(
+        (e) =>
+          e &&
+          e.type === "ReturnStatement" &&
+          e.argument &&
+          e.argument.type === "JSXElement"
+      )
+    );
+  }
+  return false;
 };
 
 const isReactFunctionComponent = (scope) => {
@@ -24,18 +28,24 @@ const isReactFunctionComponent = (scope) => {
 };
 
 const isConstructorInClass = (scope) => {
-  const { type, kind } = scope.block.parent;
-  return type === "MethodDefinition" && kind === "constructor";
+  if (scope.block && scope.block.parent) {
+    const { type, kind } = scope.block.parent;
+    return type === "MethodDefinition" && kind === "constructor";
+  }
+  return false;
 };
 
 const isRenderMethodInReactCC = (scope) => {
-  const { type, kind, key } = scope.block.parent;
-  return (
-    type === "MethodDefinition" &&
-    kind === "method" &&
-    key.name === "render" &&
-    isReturnValueJSX(scope)
-  );
+  if (scope.block && scope.block.parent) {
+    const { type, kind, key } = scope.block.parent;
+    return (
+      type === "MethodDefinition" &&
+      kind === "method" &&
+      key.name === "render" &&
+      isReturnValueJSX(scope)
+    );
+  }
+  return false;
 };
 
 const reportReference = (context, rule) => (reference) => {
@@ -129,7 +139,7 @@ const createFn = (rule) => (context) => {
   };
 };
 
-module.exports.rules = {
+const rules = {
   "no-dom-globals-in-module-scope": {
     meta: {
       type: "problem",
@@ -188,4 +198,23 @@ module.exports.rules = {
     },
     create: createFn("no-dom-globals-in-react-fc"),
   },
+};
+
+module.exports = {
+  configs: {
+    recommended: {
+      plugins: [pluginName],
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+      rules: Object.keys(rules).reduce((carry, key) => {
+        // eslint-disable-next-line no-param-reassign
+        carry[`${pluginName}/${key}`] = "error";
+        return carry;
+      }, {}),
+    },
+  },
+  rules,
 };
