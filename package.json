@@ -3,6 +3,14 @@
   "version": "1.0.2",
   "license": "MIT",
   "main": "./src/index.js",
+  "description": "ESLint plugin that detects incorrect use of DOM globals in order to properly do SSR",
+  "author": "Flavio De Stefano <destefano.flavio@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kopiro/eslint-plugin-ssr-friendly"
+  },
+  "homepage": "https://github.com/kopiro/eslint-plugin-ssr-friendly",
+  "bugs": "https://github.com/kopiro/eslint-plugin-ssr-friendly/issues",
   "files": [
     "src/index.js"
   ],
