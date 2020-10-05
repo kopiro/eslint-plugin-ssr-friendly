@@ -3,8 +3,6 @@
 ESLint plugin that detects incorrect use of DOM globals properties in your code in
 order to properly do Server-Side-Rendering.
 
-The usual scenario is when you access `window` global object without waiting for a `componentDidMount`.
-
 ## Installation
 
 ```bash
