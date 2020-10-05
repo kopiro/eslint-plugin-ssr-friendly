@@ -1,7 +1,6 @@
 # eslint-plugin-ssr-friendly
 
-ESLint plugin that detects incorrect use of DOM globals properties in your code in
-order to properly do Server-Side-Rendering.
+ESLint plugin that detects incorrect use of DOM globals in order to properly do SSR and in general share code between client-side JS and Node.js modules.
 
 [![npm version](https://badge.fury.io/js/eslint-plugin-ssr-friendly.svg)](https://badge.fury.io/js/eslint-plugin-ssr-friendly)
 
