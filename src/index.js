@@ -179,8 +179,6 @@ const rules = {
   ),
 };
 
-console.log(rules);
-
 module.exports = {
   configs: {
     recommended: {
