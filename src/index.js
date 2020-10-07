@@ -1,10 +1,10 @@
-const { browser, node } = require("globals");
+const { browser: browserGlobals, node: nodeGlobals } = require("globals");
 const pkg = require("../package.json");
 
 const pluginName = pkg.name.replace("eslint-plugin-", "");
 
 const isDOMGlobalName = (name) => {
-  return name in browser && !(name in node);
+  return name in browserGlobals && !(name in nodeGlobals);
 };
 
 const isReturnValueJSX = (scope) => {
@@ -50,10 +50,9 @@ const isRenderMethodInReactCC = (scope) => {
 
 const reportReference = (context, rule) => (reference) => {
   const node = reference.identifier;
-  const { name } = node;
-  const { parent } = node;
+  const { name, parent } = node;
 
-  // Make sure that `typeof window` is always allowed
+  // Make sure that `typeof MYVAR` is always allowed
   if (parent.type === "UnaryExpression" && parent.operator === "typeof") {
     return;
   }
@@ -139,65 +138,45 @@ const createFn = (rule) => (context) => {
   };
 };
 
+const createRule = (name, description, defaultMessage) => {
+  return {
+    [name]: {
+      meta: {
+        type: "problem",
+        docs: {
+          description,
+          recommended: true,
+        },
+        messages: {
+          defaultMessage,
+        },
+      },
+      create: createFn(name),
+    },
+  };
+};
+
 const rules = {
-  "no-dom-globals-in-module-scope": {
-    meta: {
-      type: "problem",
-      docs: {
-        description: "disallow use of DOM globals in module scope",
-        recommended: true,
-      },
-      messages: {
-        defaultMessage:
-          "Use of DOM global '{{name}}' is forbidden in module scope",
-      },
-    },
-    create: createFn("no-dom-globals-in-module-scope"),
-  },
-  "no-dom-globals-in-constructor": {
-    meta: {
-      type: "problem",
-      docs: {
-        description: "disallow use of DOM globals in class constructors",
-        recommended: true,
-      },
-      messages: {
-        defaultMessage:
-          "Use of DOM global '{{name}}' is forbidden in class constructors, consider moving this to componentDidMount() or equivalent for non React components",
-      },
-    },
-    create: createFn("no-dom-globals-in-constructor"),
-  },
-  "no-dom-globals-in-react-cc-render": {
-    meta: {
-      type: "problem",
-      docs: {
-        description:
-          "disallow use of DOM globals in render() method of a React class-component",
-        recommended: true,
-      },
-      messages: {
-        defaultMessage:
-          "Use of DOM global '{{name}}' is forbidden in render(), consider moving this to componentDidMount()",
-      },
-    },
-    create: createFn("no-dom-globals-in-react-cc-render"),
-  },
-  "no-dom-globals-in-react-fc": {
-    meta: {
-      type: "problem",
-      docs: {
-        description:
-          "disallow use of DOM globals in the render-cycle of a React FC",
-        recommended: true,
-      },
-      messages: {
-        defaultMessage:
-          "Use of DOM global '{{name}}' is forbidden in the render-cycle of a React FC, consider moving this inside useEffect()",
-      },
-    },
-    create: createFn("no-dom-globals-in-react-fc"),
-  },
+  ...createRule(
+    "no-dom-globals-in-module-scope",
+    "disallow use of DOM globals in module scope",
+    "Use of DOM global '{{name}}' is forbidden in module scope"
+  ),
+  ...createRule(
+    "no-dom-globals-in-contructor",
+    "disallow use of DOM globals in class constructors",
+    "Use of DOM global '{{name}}' is forbidden in class constructors, consider moving this to componentDidMount() or equivalent for non React components"
+  ),
+  ...createRule(
+    "no-dom-globals-in-react-cc-render",
+    "disallow use of DOM glsobals in render() method of a React class-component",
+    "Use of DOM global '{{name}}' is forbidden in render(), consider moving this to componentDidMount()"
+  ),
+  ...createRule(
+    "no-dom-globals-in-react-fc",
+    "disallow use of DOM globals in the render-cycle of a React FC",
+    "Use of DOM global '{{name}}' is forbidden in the render-cycle of a React FC, consider moving this inside useEffect()"
+  ),
 };
 
 module.exports = {
