@@ -163,7 +163,7 @@ const rules = {
     "Use of DOM global '{{name}}' is forbidden in module scope"
   ),
   ...createRule(
-    "no-dom-globals-in-contructor",
+    "no-dom-globals-in-constructor",
     "disallow use of DOM globals in class constructors",
     "Use of DOM global '{{name}}' is forbidden in class constructors, consider moving this to componentDidMount() or equivalent for non React components"
   ),
@@ -178,6 +178,8 @@ const rules = {
     "Use of DOM global '{{name}}' is forbidden in the render-cycle of a React FC, consider moving this inside useEffect()"
   ),
 };
+
+console.log(rules);
 
 module.exports = {
   configs: {
