@@ -119,6 +119,11 @@ const reportReference = (context, rule) => (reference) => {
 const createFn = (rule) => (context) => {
   return {
     Program() {
+      const filename = context.getFilename();
+      if (/\.test\.(js|ts)x?$/.test(filename)) {
+        return;
+      }
+
       const scope = context.getScope();
 
       // Report variables declared elsewhere (ex: variables defined as "global" by eslint)
