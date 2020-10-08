@@ -21,6 +21,23 @@ const ruleTester = new RuleTester({
 
 ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-module-scope"], {
   valid: [
+    "/var/www/file.test.js",
+    "/var/www/file.test.jsx",
+    "/var/www/file.test.ts",
+    "/var/www/file.test.tsx",
+  ].map((filename) => ({
+    code: `const px = devicePixelRatio;`, // definitely an error
+    filename,
+  })),
+  invalid: ["/var/www/file.js", "/var/www/file.ts"].map((filename) => ({
+    code: `const px = devicePixelRatio;`, // definitely an error
+    filename,
+    errors: [{ message: /.*/ }],
+  })),
+});
+
+ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-module-scope"], {
+  valid: [
     `function getPixelRatio() { return devicePixelRatio; }`,
     `const getPixelRatio = () => devicePixelRatio`,
     `const isRetina = () => devicePixelRatio >= 2`,

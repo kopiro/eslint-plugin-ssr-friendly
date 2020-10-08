@@ -24,7 +24,7 @@
     "nodejs"
   ],
   "scripts": {
-    "test": "node ./test"
+    "test": "node ./test/index.test.js"
   },
   "devDependencies": {
     "eslint": "^7.10.0",
