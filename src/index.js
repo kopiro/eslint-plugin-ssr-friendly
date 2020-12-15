@@ -8,7 +8,12 @@ const isDOMGlobalName = (name) => {
 };
 
 const isReturnValueJSX = (scope) => {
-  if (scope.block && scope.block.body && scope.block.body.body) {
+  if (
+    scope.block &&
+    scope.block.body &&
+    scope.block.body.body &&
+    typeof scope.block.body.body.find === "function"
+  ) {
     return (
       scope.type === "function" &&
       scope.block.body.body.find(
