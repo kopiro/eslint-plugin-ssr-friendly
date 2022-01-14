@@ -27,6 +27,7 @@
     "test": "node ./test/index.test.js"
   },
   "devDependencies": {
+    "@typescript-eslint/parser": "^5.9.1",
     "eslint": "^7.27.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^6.15.0",

@@ -57,11 +57,11 @@ const reportReference = (context, rule) => (reference) => {
   const node = reference.identifier;
   const { name, parent } = node;
 
-  // Make sure that `typeof MYVAR` is always allowed
+  // Make sure that `typeof MYVAR` is always allowed and DOM related typescript type or interface are allowed
   if (
     (parent.type === "UnaryExpression" && parent.operator === "typeof") ||
-    reference.identifier.parent.type === "TSTypeReference" ||
-    reference.identifier.parent.type === "TSInterfaceHeritage"
+    parent.type === "TSTypeReference" ||
+    parent.type === "TSInterfaceHeritage"
   ) {
     return;
   }
