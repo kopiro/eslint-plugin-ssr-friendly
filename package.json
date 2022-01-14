@@ -1,5 +1,5 @@
 {
-  "name": "@cultureamp/eslint-plugin-ssr-friendly",
+  "name": "eslint-plugin-ssr-friendly",
   "version": "1.0.5",
   "license": "MIT",
   "main": "./src/index.js",
