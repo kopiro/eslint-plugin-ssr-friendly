@@ -58,7 +58,11 @@ const reportReference = (context, rule) => (reference) => {
   const { name, parent } = node;
 
   // Make sure that `typeof MYVAR` is always allowed
-  if (parent.type === "UnaryExpression" && parent.operator === "typeof") {
+  if (
+    (parent.type === "UnaryExpression" && parent.operator === "typeof") ||
+    reference.identifier.parent.type === "TSTypeReference" ||
+    reference.identifier.parent.type === "TSInterfaceHeritage"
+  ) {
     return;
   }
 
