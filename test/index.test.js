@@ -44,9 +44,6 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-module-scope"], {
     `const isRetina = () => devicePixelRatio >= 2`,
     `const isWindowAvailable = typeof window !== "undefined"`,
     `function createNode() { const analyserNode = new AnalyserNode; return analyserNode; }`,
-    `export type GenericProps = {
-      icon?: React.SVGAttributes<SVGSymbolElement>
-    }`,
   ].map((code) => ({ code })),
   invalid: [
     `const px = devicePixelRatio;`,
