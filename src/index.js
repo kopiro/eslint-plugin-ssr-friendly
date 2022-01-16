@@ -21,7 +21,8 @@ const isReturnValueJSX = (scope) => {
           e &&
           e.type === "ReturnStatement" &&
           e.argument &&
-          e.argument.type === "JSXElement"
+          (e.argument.type === "JSXElement" ||
+            e.argument.type === "JSXFragment")
       )
     );
   }

@@ -176,6 +176,10 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
       window.addEventListener('resize', () => {});
       return <div />;
     }`,
+    `const Header = () => {
+      document.title = "Otto";
+      return <><div>Header</div></>;
+    }`,
   ].map((code) => ({
     code,
     errors: [{ message: /Use of DOM global .* FC/ }],
