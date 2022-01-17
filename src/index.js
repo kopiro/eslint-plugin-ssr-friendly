@@ -21,7 +21,8 @@ const isReturnValueJSX = (scope) => {
           e &&
           e.type === "ReturnStatement" &&
           e.argument &&
-          e.argument.type === "JSXElement"
+          (e.argument.type === "JSXElement" ||
+            e.argument.type === "JSXFragment")
       )
     );
   }
@@ -57,8 +58,12 @@ const reportReference = (context, rule) => (reference) => {
   const node = reference.identifier;
   const { name, parent } = node;
 
-  // Make sure that `typeof MYVAR` is always allowed
-  if (parent.type === "UnaryExpression" && parent.operator === "typeof") {
+  // Make sure that `typeof MYVAR` is always allowed and DOM related typescript type or interface are allowed
+  if (
+    (parent.type === "UnaryExpression" && parent.operator === "typeof") ||
+    parent.type === "TSTypeReference" ||
+    parent.type === "TSInterfaceHeritage"
+  ) {
     return;
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-ssr-friendly",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "MIT",
   "main": "./src/index.js",
   "description": "ESLint plugin that detects incorrect use of DOM globals in order to properly do SSR",
@@ -27,12 +27,14 @@
     "test": "node ./test/index.test.js"
   },
   "devDependencies": {
+    "@typescript-eslint/parser": "^5.9.1",
     "eslint": "^7.27.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-import": "^2.23.3",
     "eslint-plugin-prettier": "^3.4.0",
-    "prettier": "^2.3.0"
+    "prettier": "^2.3.0",
+    "typescript": "^4.5.4"
   },
   "peerDependencies": {
     "eslint": ">=0.8.0"
