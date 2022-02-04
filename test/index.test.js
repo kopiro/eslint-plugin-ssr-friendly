@@ -11,6 +11,7 @@ const ruleTester = new RuleTester({
     es2021: true,
     node: true,
   },
+  parser: require.resolve("@typescript-eslint/parser"),
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -43,6 +44,9 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-module-scope"], {
     `const isRetina = () => devicePixelRatio >= 2`,
     `const isWindowAvailable = typeof window !== "undefined"`,
     `function createNode() { const analyserNode = new AnalyserNode; return analyserNode; }`,
+    `export type GenericProps = {
+      icon?: React.SVGAttributes<SVGSymbolElement>
+    }`,
   ].map((code) => ({ code })),
   invalid: [
     `const px = devicePixelRatio;`,
@@ -59,42 +63,42 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-module-scope"], {
 
 ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-constructor"], {
   valid: [
-    `class myClass { 
-      constructor() {} 
-      init() { 
-        this.isRetina = window.devicePixelRatio >= 2; 
-      } 
+    `class myClass {
+      constructor() {}
+      init() {
+        this.isRetina = window.devicePixelRatio >= 2;
+      }
     }`,
-    `class myClass { 
-      componentDidMount() { 
-        document.title = "Otto"; 
-      } 
+    `class myClass {
+      componentDidMount() {
+        document.title = "Otto";
+      }
     }`,
   ].map((code) => ({ code })),
   invalid: [
     `class myClass {
-      constructor() { 
+      constructor() {
         this.scrollX = scrollX;
       }
     }`,
     `class myClass {
-      constructor() { 
+      constructor() {
         window.addEventListener('resize', () => {});
       }
     }`,
     `class myClass {
-      constructor() { 
+      constructor() {
         window.ondrag = function() {};
       }
     }`,
     `class myClass {
-      constructor() { 
+      constructor() {
         document.title = "Otto";
       }
     }`,
-    `class Header extends React.Component { 
-      constructor() { 
-        this.isRetina = window.devicePixelRatio >= 2; 
+    `class Header extends React.Component {
+      constructor() {
+        this.isRetina = window.devicePixelRatio >= 2;
       }
     }`,
   ].map((code) => ({
@@ -106,15 +110,15 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-constructor"], {
 ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-cc-render"], {
   valid: [
     `class Header extends React.Component {
-        componentDidMount() { 
+        componentDidMount() {
           this.setState({ isRetina: devicePixelRatio >= 2 });
         }
         render() {
             return <div data-is-retina={this.state.isRetina} />;
         }
        }`,
-    `class Header extends React.Component { 
-        componentDidMount() { 
+    `class Header extends React.Component {
+        componentDidMount() {
             document.title = "Otto";
         }
         render() {
@@ -123,12 +127,12 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-cc-render"], {
       }`,
   ].map((code) => ({ code })),
   invalid: [
-    `class Header extends React.Component { 
+    `class Header extends React.Component {
         render() {
           return <div data-is-retina={window.devicePixelRatio >= 2} />;
         }
        }`,
-    `class Header extends React.Component { 
+    `class Header extends React.Component {
         render() {
           const width = window.innerWidth;
           return <div style={{ width }} />;
@@ -146,6 +150,10 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
       useEffect(() => {
           document.title = "Otto";
       }, []);
+      return <div />;
+    }`,
+    `const Header = () => {
+      const image = useRef<HTMLImageElement>(null)
       return <div />;
     }`,
     `const Header = () => {
@@ -167,6 +175,10 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
     `const Header = () => {
       window.addEventListener('resize', () => {});
       return <div />;
+    }`,
+    `const Header = () => {
+      document.title = "Otto";
+      return <><div>Header</div></>;
     }`,
   ].map((code) => ({
     code,
