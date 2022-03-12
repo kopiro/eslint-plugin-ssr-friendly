@@ -7,7 +7,7 @@ ESLint plugin that detects incorrect use of DOM globals in order to properly do 
 ## Installation
 
 ```bash
-npm i --dev eslint-plugin-ssr-friendly
+npm i --save-dev eslint-plugin-ssr-friendly
 ```
 
 Then add these to your eslintrc configuration:
