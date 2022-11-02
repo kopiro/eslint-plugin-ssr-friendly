@@ -162,6 +162,11 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
       }, []);
       return <div />;
     }`,
+    // this passes but should fail
+    `function Header({url}) {
+      const href = url + window.location.hash;
+      return null
+    }`,
   ].map((code) => ({ code })),
   invalid: [
     `const Header = () => {
@@ -179,6 +184,11 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
     `const Header = () => {
       document.title = "Otto";
       return <><div>Header</div></>;
+    }`,
+    // this fails as expected
+    `function Header ({url}) {
+      const href = url + window.location.hash
+      return <>{href}</>;
     }`,
   ].map((code) => ({
     code,
