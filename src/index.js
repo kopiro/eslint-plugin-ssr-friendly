@@ -184,7 +184,7 @@ const rules = {
   ),
   ...createRule(
     "no-dom-globals-in-react-cc-render",
-    "disallow use of DOM glsobals in render() method of a React class-component",
+    "disallow use of DOM globals in render() method of a React class-component",
     "Use of DOM global '{{name}}' is forbidden in render(), consider moving this to componentDidMount()"
   ),
   ...createRule(
