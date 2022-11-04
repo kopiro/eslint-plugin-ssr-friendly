@@ -7,7 +7,7 @@ const isDOMGlobalName = (name) => {
   return name in browserGlobals && !(name in nodeGlobals);
 };
 
-const isReturnValueJSX = (scope) => {
+const isReturnValueJSXOrNull = (scope) => {
   if (
     scope.block &&
     scope.block.body &&
@@ -22,15 +22,36 @@ const isReturnValueJSX = (scope) => {
           e.type === "ReturnStatement" &&
           e.argument &&
           (e.argument.type === "JSXElement" ||
-            e.argument.type === "JSXFragment")
+            e.argument.type === "JSXFragment" ||
+            (e.argument.type === "Literal" && e.argument.value === null))
       )
     );
   }
   return false;
 };
 
+const isFirstLetterCapitalized = (name) => {
+  return name && name[0] === name[0].toUpperCase();
+};
+
 const isReactFunctionComponent = (scope) => {
-  return isReturnValueJSX(scope);
+  // eslint-disable-next-line default-case
+  switch (scope.block.type) {
+    case "FunctionDeclaration":
+      return (
+        isFirstLetterCapitalized(scope.block.id.name) &&
+        isReturnValueJSXOrNull(scope)
+      );
+    case "FunctionExpression":
+    case "ArrowFunctionExpression":
+      if (scope.block.parent.type === "VariableDeclarator") {
+        return (
+          isFirstLetterCapitalized(scope.block.parent.id.name) &&
+          isReturnValueJSXOrNull(scope)
+        );
+      }
+  }
+  return false;
 };
 
 const isConstructorInClass = (scope) => {
@@ -48,7 +69,7 @@ const isRenderMethodInReactCC = (scope) => {
       type === "MethodDefinition" &&
       kind === "method" &&
       key.name === "render" &&
-      isReturnValueJSX(scope)
+      isReturnValueJSXOrNull(scope)
     );
   }
   return false;
