@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-ssr-friendly",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "license": "MIT",
   "main": "./src/index.js",
   "description": "ESLint plugin that detects incorrect use of DOM globals in order to properly do SSR",
