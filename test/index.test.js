@@ -138,6 +138,12 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-cc-render"], {
           return <div style={{ width }} />;
         }
        }`,
+    `class Header extends React.Component {
+        render() {
+          const width = window.innerWidth;
+          return null;
+        }
+       }`,
   ].map((code) => ({
     code,
     errors: [{ message: /Use of DOM global .* render/ }],
@@ -179,6 +185,18 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
     `const Header = () => {
       document.title = "Otto";
       return <><div>Header</div></>;
+    }`,
+    `const Header = function ({url}) {
+      const href = url + window.location.hash
+      return <>{href}</>;
+    }`,
+    `function Header ({url}) {
+      const href = url + window.location.hash
+      return <>{href}</>;
+    }`,
+    `function Header({url}) {
+      const href = url + window.location.hash;
+      return null
     }`,
   ].map((code) => ({
     code,
