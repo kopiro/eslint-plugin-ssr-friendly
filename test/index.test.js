@@ -172,7 +172,7 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
       useEffect(() => {
           window.addEventListener('resize', () => {});
       }, []);
-      return <div {...props} ref={ref}>{href}</div>;
+      return <div {...props} ref={ref} />;
     })`,
   ].map((code) => ({ code })),
   invalid: [
