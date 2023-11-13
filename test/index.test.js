@@ -168,6 +168,12 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
       }, []);
       return <div />;
     }`,
+    `const Header = React.forwardRef(function (props, ref) {
+      useEffect(() => {
+          window.addEventListener('resize', () => {});
+      }, []);
+      return <div {...props} ref={ref} />;
+    })`,
   ].map((code) => ({ code })),
   invalid: [
     `const Header = () => {
@@ -198,6 +204,10 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
       const href = url + window.location.hash;
       return null
     }`,
+    `const Header = React.forwardRef(function (props, ref) {
+      const href = url + window.location.hash
+      return <div {...props} ref={ref}>{href}</div>;
+    })`,
   ].map((code) => ({
     code,
     errors: [{ message: /Use of DOM global .* FC/ }],

@@ -34,6 +34,15 @@ const isFirstLetterCapitalized = (name) => {
   return name && name[0] === name[0].toUpperCase();
 };
 
+function isReactFunction(node, functionName) {
+  return (
+    node.name === functionName ||
+    (node.type === "MemberExpression" &&
+      node.object.name === "React" &&
+      node.property.name === functionName)
+  );
+}
+
 const isReactFunctionComponent = (scope) => {
   // eslint-disable-next-line default-case
   switch (scope.block.type) {
@@ -49,6 +58,12 @@ const isReactFunctionComponent = (scope) => {
           isFirstLetterCapitalized(scope.block.parent.id.name) &&
           isReturnValueJSXOrNull(scope)
         );
+      }
+      if (
+        scope.block.parent.type === "CallExpression" &&
+        isReactFunction(scope.block.parent.callee, "forwardRef")
+      ) {
+        return true;
       }
   }
   return false;
