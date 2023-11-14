@@ -7,6 +7,14 @@ const isDOMGlobalName = (name) => {
   return name in browserGlobals && !(name in nodeGlobals);
 };
 
+const isJSXElementOrFragment = (argumentType) => {
+  return argumentType === "JSXElement" || argumentType === "JSXFragment";
+};
+
+const isReturnValueNull = (argument) => {
+  return argument.type === "Literal" && argument.value === null;
+};
+
 const isReturnValueJSXOrNull = (scope) => {
   if (
     scope.block &&
@@ -16,15 +24,27 @@ const isReturnValueJSXOrNull = (scope) => {
   ) {
     return (
       scope.type === "function" &&
-      scope.block.body.body.find(
-        (e) =>
-          e &&
-          e.type === "ReturnStatement" &&
-          e.argument &&
-          (e.argument.type === "JSXElement" ||
-            e.argument.type === "JSXFragment" ||
-            (e.argument.type === "Literal" && e.argument.value === null))
-      )
+      scope.block.body.body.find((e) => {
+        if (!(e && e.type === "ReturnStatement" && e.argument)) {
+          return false;
+        }
+        if (
+          isJSXElementOrFragment(e.argument.type) ||
+          isReturnValueNull(e.argument)
+        ) {
+          return true;
+        }
+        if (
+          e.argument.type === "ConditionalExpression" &&
+          (isJSXElementOrFragment(e.argument.consequent.type) ||
+            isReturnValueNull(e.argument.consequent)) &&
+          (isJSXElementOrFragment(e.argument.alternate.type) ||
+            isReturnValueNull(e.argument.alternate))
+        ) {
+          return true;
+        }
+        return false;
+      })
     );
   }
   return false;
