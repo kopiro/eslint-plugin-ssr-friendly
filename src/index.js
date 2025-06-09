@@ -68,6 +68,7 @@ const isReactFunctionComponent = (scope) => {
   switch (scope.block.type) {
     case "FunctionDeclaration":
       return (
+        scope && scope.block && scope.block.id &&
         isFirstLetterCapitalized(scope.block.id.name) &&
         isReturnValueJSXOrNull(scope)
       );
