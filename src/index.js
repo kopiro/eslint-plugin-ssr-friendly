@@ -210,6 +210,8 @@ const createFn = (rule) => (context) => {
 };
 
 const createRule = (name, description, defaultMessage) => {
+  const ruleDocUrl = `https://github.com/kopiro/eslint-plugin-ssr-friendly/blob/main/README.md#${name}`;
+
   return {
     [name]: {
       meta: {
@@ -217,6 +219,7 @@ const createRule = (name, description, defaultMessage) => {
         docs: {
           description,
           recommended: true,
+          url: ruleDocUrl,
         },
         messages: {
           defaultMessage,
