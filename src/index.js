@@ -253,21 +253,32 @@ const rules = {
   ),
 };
 
-module.exports = {
-  configs: {
-    recommended: {
-      plugins: [pluginName],
+const plugin = {
+  meta: {
+    name: pkg.name,
+    version: pkg.version,
+  },
+  rules: rules,
+};
+
+plugin.configs = {
+  recommended: {
+    plugins: {
+      [pluginName]: plugin,
+    },
+    languageOptions: {
       parserOptions: {
         ecmaFeatures: {
           jsx: true,
         },
       },
-      rules: Object.keys(rules).reduce((carry, key) => {
-        // eslint-disable-next-line no-param-reassign
-        carry[`${pluginName}/${key}`] = "error";
-        return carry;
-      }, {}),
     },
+    rules: Object.keys(rules).reduce((carry, key) => {
+      // eslint-disable-next-line no-param-reassign
+      carry[`${pluginName}/${key}`] = "error";
+      return carry;
+    }, {}),
   },
-  rules,
 };
+
+module.exports = plugin;
