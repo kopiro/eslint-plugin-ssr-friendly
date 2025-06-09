@@ -1,22 +1,25 @@
 const { RuleTester } = require("eslint");
+const globals = require("globals");
 const pkg = require("../package.json");
 const plugin = require("../src/index");
 
 const pluginName = pkg.name.replace("eslint-plugin-", "");
 
 const ruleTester = new RuleTester({
-  env: {
-    browser: true,
-    commonjs: true,
-    es2021: true,
-    node: true,
-  },
-  parser: require.resolve("@typescript-eslint/parser"),
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
+  languageOptions: {
     ecmaVersion: 12,
+    parser: require.resolve("@typescript-eslint/parser"),
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
+    },
+    globals: {
+      ...globals.browser,
+      ...globals.commonjs,
+      ...globals.node,
+      // es2021 globals are generally included with ecmaVersion: 12
+    },
   },
 });
 
