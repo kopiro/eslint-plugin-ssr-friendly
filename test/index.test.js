@@ -8,7 +8,7 @@ const pluginName = pkg.name.replace("eslint-plugin-", "");
 const ruleTester = new RuleTester({
   languageOptions: {
     ecmaVersion: 12,
-    parser: require.resolve("@typescript-eslint/parser"),
+    parser: require("@typescript-eslint/parser"),
     parserOptions: {
       ecmaFeatures: {
         jsx: true,
