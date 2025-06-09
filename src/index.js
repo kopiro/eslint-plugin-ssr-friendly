@@ -190,7 +190,8 @@ const createFn = (rule) => (context) => {
         return;
       }
 
-      const scope = context.getScope();
+      const sourceCode = context.getSourceCode();
+      const scope = sourceCode.getScope();
 
       // Report variables declared elsewhere (ex: variables defined as "global" by eslint)
       scope.variables.forEach((variable) => {
