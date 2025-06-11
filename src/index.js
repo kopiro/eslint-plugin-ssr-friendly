@@ -191,7 +191,8 @@ const createFn = (rule) => (context) => {
         return;
       }
 
-      const scope = context.getScope();
+      const sourceCode = context.getSourceCode();
+      const scope = sourceCode.getScope(sourceCode.ast);
 
       // Report variables declared elsewhere (ex: variables defined as "global" by eslint)
       scope.variables.forEach((variable) => {
@@ -211,6 +212,8 @@ const createFn = (rule) => (context) => {
 };
 
 const createRule = (name, description, defaultMessage) => {
+  const ruleDocUrl = `https://github.com/kopiro/eslint-plugin-ssr-friendly/blob/main/README.md#${name}`;
+
   return {
     [name]: {
       meta: {
@@ -218,6 +221,7 @@ const createRule = (name, description, defaultMessage) => {
         docs: {
           description,
           recommended: true,
+          url: ruleDocUrl,
         },
         messages: {
           defaultMessage,
@@ -251,21 +255,32 @@ const rules = {
   ),
 };
 
-module.exports = {
-  configs: {
-    recommended: {
-      plugins: [pluginName],
+const plugin = {
+  meta: {
+    name: pkg.name,
+    version: pkg.version,
+  },
+  rules: rules,
+};
+
+plugin.configs = {
+  recommended: {
+    plugins: {
+      [pluginName]: plugin,
+    },
+    languageOptions: {
       parserOptions: {
         ecmaFeatures: {
           jsx: true,
         },
       },
-      rules: Object.keys(rules).reduce((carry, key) => {
-        // eslint-disable-next-line no-param-reassign
-        carry[`${pluginName}/${key}`] = "error";
-        return carry;
-      }, {}),
     },
+    rules: Object.keys(rules).reduce((carry, key) => {
+      // eslint-disable-next-line no-param-reassign
+      carry[`${pluginName}/${key}`] = "error";
+      return carry;
+    }, {}),
   },
-  rules,
 };
+
+module.exports = plugin;

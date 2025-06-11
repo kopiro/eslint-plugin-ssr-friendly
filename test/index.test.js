@@ -1,26 +1,29 @@
 const { RuleTester } = require("eslint");
+const globals = require("globals");
 const pkg = require("../package.json");
 const plugin = require("../src/index");
 
 const pluginName = pkg.name.replace("eslint-plugin-", "");
 
 const ruleTester = new RuleTester({
-  env: {
-    browser: true,
-    commonjs: true,
-    es2021: true,
-    node: true,
-  },
-  parser: require.resolve("@typescript-eslint/parser"),
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
+  languageOptions: {
     ecmaVersion: 12,
+    parser: require("@typescript-eslint/parser"),
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
+    },
+    globals: {
+      ...globals.browser,
+      ...globals.commonjs,
+      ...globals.node,
+      // es2021 globals are generally included with ecmaVersion: 12
+    },
   },
 });
 
-ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-module-scope"], {
+ruleTester.run("no-dom-globals-in-module-scope", plugin.rules["no-dom-globals-in-module-scope"], {
   valid: [
     "/var/www/file.test.js",
     "/var/www/file.test.jsx",
@@ -37,7 +40,7 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-module-scope"], {
   })),
 });
 
-ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-module-scope"], {
+ruleTester.run("no-dom-globals-in-module-scope", plugin.rules["no-dom-globals-in-module-scope"], {
   valid: [
     `function getPixelRatio() { return devicePixelRatio; }`,
     `const getPixelRatio = () => devicePixelRatio`,
@@ -61,7 +64,7 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-module-scope"], {
   })),
 });
 
-ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-constructor"], {
+ruleTester.run("no-dom-globals-in-constructor", plugin.rules["no-dom-globals-in-constructor"], {
   valid: [
     `class myClass {
       constructor() {}
@@ -107,7 +110,7 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-constructor"], {
   })),
 });
 
-ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-cc-render"], {
+ruleTester.run("no-dom-globals-in-react-cc-render", plugin.rules["no-dom-globals-in-react-cc-render"], {
   valid: [
     `class Header extends React.Component {
         componentDidMount() {
@@ -150,7 +153,7 @@ ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-cc-render"], {
   })),
 });
 
-ruleTester.run(pluginName, plugin.rules["no-dom-globals-in-react-fc"], {
+ruleTester.run("no-dom-globals-in-react-fc", plugin.rules["no-dom-globals-in-react-fc"], {
   valid: [
     `const Header = () => {
       useEffect(() => {
